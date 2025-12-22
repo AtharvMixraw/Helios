@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    container_name: event_processor_api
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    volumes:
+      - ./data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    container_name: event_processor_worker
+    # Override CMD for standalone worker testing
+    command: ["python3", "worker.py", "data/raw/events.csv", "0", "100", "0", "data/processed/chunks/test_output.json"]
+    profiles:
+      - worker-test

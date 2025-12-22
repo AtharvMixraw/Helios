@@ -1,0 +1,16 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install dependencies (minimal for worker)
+RUN pip install --no-cache-dir pandas
+
+# Copy only worker code
+COPY worker.py .
+COPY compute.py .
+
+# Create data directories
+RUN mkdir -p data/raw data/processed/chunks
+
+# Default command (can be overridden)
+CMD ["python3", "worker.py"]
